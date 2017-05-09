@@ -8,7 +8,7 @@ import subprocess
 import os
 
 ACTION_DIR = '/var/tmp/one/user_action'
-URI = 'http://one:2633/RPC2'
+URI = 'http://alpha:2633/RPC2'
 AUTH = 'XXXX:XXXX'
 SSH_USER = 'oneadmin'
 
@@ -37,7 +37,7 @@ def get_vm_info(id):
             -2  # state ANY
             )
     if not ok:
-        return False
+        return None
     root = ET.fromstring(res)
     vm = root.find('VM')
     return vm
@@ -48,6 +48,7 @@ def get_vm_host(vm):
 
 def get_vm_domain(vm):
     return vm.find('./DEPLOY_ID').text
+
 
 def execute_remote(host, cmd):
 
@@ -63,6 +64,8 @@ def execute_remote(host, cmd):
 
 def remote_action(vid, action, params):
     vm = get_vm_info(vid)
+    if not vm:
+        return(255, '', 'Can not get VM. ID is incorrect, no permissions, or no access to OpenNebula')
     host = get_vm_host(vm)
     vm_domain = get_vm_domain(vm)
     cmd_list = [ ACTION_DIR + '/' + action, vm_domain ] + params
