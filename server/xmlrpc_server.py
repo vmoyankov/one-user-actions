@@ -3,15 +3,20 @@
 
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from SimpleXMLRPCServer import SimpleXMLRPCRequestHandler
+from SocketServer import ForkingMixIn
+
 
 import user_action
+
+class ForkingServer(ForkingMixIn, SimpleXMLRPCServer):
+    pass
 
 # Restrict to a particular path.
 class RequestHandler(SimpleXMLRPCRequestHandler):
     rpc_paths = ('/RPC2',)
 
 # Create server
-server = SimpleXMLRPCServer(("0.0.0.0", 8001),
+server = ForkingServer(("0.0.0.0", 8001),
                             requestHandler=RequestHandler)
 server.register_introspection_functions()
 
@@ -33,7 +38,7 @@ def clear_firewall(auth, vid):
 def test(auth, vid):
     user_action.AUTH = auth
     res = user_action.remote_action(vid, 'guest_exec.py', [
-        'sh', '-c', "'hostname; set; echo SUCCESS'"
+        'sh', '-c', "'hostname; set; echo SUCCESS; sleep 5'"
         ])
     return (res[0] == 0, res[2] if res[0] else res[1], res[0])
 

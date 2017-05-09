@@ -24,7 +24,7 @@ def get_output(domain, pid, timeout=5):
             if (time.time() - start_time > timeout):
                 return None
             time.sleep(0.5)
-        return res
+    return res
 
 def guest_exec(domain, cmd, argv, wait=True):
     ga_cmd = {
