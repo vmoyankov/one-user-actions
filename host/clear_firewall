@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import sys
+
+import guest_exec as ge
+
+GUEST_PATH = '/etc/one-user-actions'
+
+def main():
+    import os
+    if len(sys.argv) == 2:
+        out = ge.guest_exec(sys.argv[1],
+                GUEST_PATH + '/clear_firewall',
+                [], wait=True)
+        print out[1],
+        print >> sys.stderr, out[2],
+        sys.exit(out[0])
+    else:
+        print >> sys.stderr, "Usage %s <domain>" % sys.argv[0]
+        sys.exit(os.EX_USAGE)
+
+if __name__ == '__main__':
+    main()
