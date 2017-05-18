@@ -35,9 +35,12 @@ def guest_exec(domain, cmd, argv, wait=True):
                 "capture-output": True
                 }
             }
-    result_str = subprocess.check_output(
-            ['virsh', 'qemu-agent-command', domain, json.dumps(ga_cmd)]
-            )
+    try:
+        result_str = subprocess.check_output(
+                ['virsh', 'qemu-agent-command', domain, json.dumps(ga_cmd)]
+                )
+    except subprocess.CalledProcessError as e:
+        return(e.returncode, e.output, '')
     res = json.loads(result_str)
     pid = res['return']['pid']
 

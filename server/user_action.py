@@ -8,7 +8,7 @@ import subprocess
 import os
 
 ACTION_DIR = '/var/tmp/one/user_action'
-URI = 'http://alpha:2633/RPC2'
+URI = 'http://localhost:2633/RPC2'
 AUTH = 'XXXX:XXXX'
 SSH_USER = 'oneadmin'
 
@@ -43,7 +43,10 @@ def get_vm_info(id):
     return vm
 
 def get_vm_host(vm):
-    host = vm.find("./HISTORY_RECORDS/HISTORY[ETIME='0']/HOSTNAME").text
+    try:
+        host = vm.find("./HISTORY_RECORDS/HISTORY[ETIME='0']/HOSTNAME").text
+    except AttributeError:
+        return None
     return host
 
 def get_vm_domain(vm):
@@ -63,10 +66,14 @@ def execute_remote(host, cmd):
     return (exit_code, out, err)
 
 def remote_action(vid, action, params):
+    if '/' in action:
+        raise ValueError('Invalid action format')
     vm = get_vm_info(vid)
     if not vm:
         return(255, '', 'Can not get VM. ID is incorrect, no permissions, or no access to OpenNebula')
     host = get_vm_host(vm)
+    if not host:
+        return(254, '', 'VM is not depolyed')
     vm_domain = get_vm_domain(vm)
     cmd_list = [ ACTION_DIR + '/' + action, vm_domain ] + params
     return execute_remote(host, cmd_list)
