@@ -5,7 +5,7 @@ import sys
 
 import guest_exec as ge
 
-GUEST_PATH = '/etc/one-user-actions'
+GUEST_PATH = '/etc/one-user-action'
 
 def main():
     print repr(sys.argv)

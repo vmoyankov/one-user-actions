@@ -16,7 +16,8 @@ def get_output(domain, pid, timeout=5):
     ready = False
     while not ready:
         result_str = subprocess.check_output(
-                ['virsh', 'qemu-agent-command', domain, json.dumps(ga_cmd)]
+                ['virsh', '--connect', 'qemu:///system',
+                    'qemu-agent-command', domain, json.dumps(ga_cmd)]
                 )
         res = json.loads(result_str)
         ready = res['return']['exited']
@@ -37,7 +38,8 @@ def guest_exec(domain, cmd, argv, wait=True):
             }
     try:
         result_str = subprocess.check_output(
-                ['virsh', 'qemu-agent-command', domain, json.dumps(ga_cmd)]
+                ['virsh', '--connect', 'qemu:///system',
+                    'qemu-agent-command', domain, json.dumps(ga_cmd)]
                 )
     except subprocess.CalledProcessError as e:
         return(e.returncode, e.output, '')

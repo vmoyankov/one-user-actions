@@ -5,13 +5,13 @@ import sys
 
 import guest_exec as ge
 
-GUEST_PATH = '/etc/one-user-actions'
+GUEST_PATH = '/etc/one-user-action'
 
 def main():
     import os
     if len(sys.argv) == 2:
         out = ge.guest_exec(sys.argv[1],
-                GUEST_PATH + '/update_network_config',
+                GUEST_PATH + '/reset_network_config',
                 [], wait=True)
         print out[1],
         print >> sys.stderr, out[2],
