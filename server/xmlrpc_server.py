@@ -18,7 +18,7 @@ class RequestHandler(SimpleXMLRPCRequestHandler):
     rpc_paths = ('/RPC2',)
 
 # Create server
-server = ForkingServer(("0.0.0.0", 8001),
+server = ForkingServer(("0.0.0.0", 2634),
                             requestHandler=RequestHandler)
 server.register_introspection_functions()
 
@@ -54,7 +54,7 @@ def test(auth, vid, msg):
     res = user_action.remote_action(vid, 'test', [msg])
     return (res[0] == 0, res[2] if res[0] else res[1], res[0])
 
-def exec(auth, vid, cmd):
+def u_exec(auth, vid, cmd):
     user_action.AUTH = auth
     res = user_action.remote_action(vid, 'guest_exec', [cmd])
     return (res[0] == 0, res[2] if res[0] else res[1], res[0])
@@ -65,7 +65,7 @@ server.register_function(clear_firewall, 'one.user_action.clear_firewall')
 server.register_function(add_ip_alias, 'one.user_action.add_ip_alias')
 server.register_function(del_ip_alias, 'one.user_action.del_ip_alias')
 server.register_function(test, 'one.user_action.test')
-server.register_function(exec, 'one.user_action.exec')
+server.register_function(u_exec, 'one.user_action.execute')
 
 if '-d' in sys.argv:
     pid = os.fork()
