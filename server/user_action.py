@@ -12,6 +12,7 @@ URI = 'http://localhost:2633/RPC2'
 AUTH = 'XXXX:XXXX'
 SSH_USER = 'oneadmin'
 
+server = None
 
 def get_vm_info(id):
 
@@ -25,10 +26,12 @@ def get_vm_info(id):
             h = httplib.HTTPConnection(host, timeout=self.timeout)
             return h
 
-    t = TimeoutTransport()
-    t.set_timeout(2.0)
 
-    server = xmlrpclib.ServerProxy(URI, transport=t)
+    if server is None:
+        t = TimeoutTransport()
+        t.set_timeout(2.0)
+        server = xmlrpclib.ServerProxy(URI, transport=t)
+
     ok, res, code = server.one.vmpool.info(
             AUTH,
             -2,  # all resources
@@ -52,6 +55,33 @@ def get_vm_host(vm):
 def get_vm_domain(vm):
     return vm.find('./DEPLOY_ID').text
 
+def get_vm_id(vm):
+    return int(vm.find('./ID').text)
+
+def get_vm_context(vm):
+    try:
+        ctx = vm.find('./TEMPLATE/CONTEXT')
+    except AttributeError:
+        return None
+    return ctx
+
+def set_vm_context(vm,ctx):
+    vmid = get_vm_id(vm)
+    xml = ET.tostring(ctx)
+
+    if server is None:
+        t = TimeoutTransport()
+        t.set_timeout(2.0)
+        server = xmlrpclib.ServerProxy(URI, transport=t)
+
+    ok, res, code = server.one.vm.updateconf(
+            AUTH,
+            vmid,
+            xml
+            )
+    if not ok:
+        return None
+    return res
 
 def execute_remote(host, cmd):
 
