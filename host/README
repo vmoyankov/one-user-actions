@@ -1,4 +1,4 @@
-Install this on hypervisors at /var/tmp/one/user_action/
+Install these files on all hypervisors at /var/tmp/one/user_action/
 
 For automatic deployment on new hypervisors, install files on ONE server
 at /var/lib/one/remotes/user_action
