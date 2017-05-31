@@ -2,13 +2,15 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import shlex
 
-import guest_exec
+import guest_exec as ge
 
 def main():
     import os
-    if len(sys.argv) > 2:
-        out = guest_exec.guest_exec(sys.argv[1], sys.argv[2], sys.argv[3:], wait=True)
+    if len(sys.argv) == 3:
+        cmd = shlex.split(sys.argv[2].decode('base64'))
+        out = ge.guest_exec(sys.argv[1], cmd[0], cmd[1:], wait=True)
         print out[1],
         print >> sys.stderr, out[2],
         sys.exit(out[0])

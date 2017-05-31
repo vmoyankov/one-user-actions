@@ -1,0 +1,15 @@
+
+get_distro(){
+    OS=UNKNOWN
+    OS_VER=UNKNOWN
+    if [ -f /etc/lsb-release ]; then
+        OS=$(lsb_release -s -i | tr '[:upper:]' '[:lower:]')
+        OS_VER=$(lsb_release -s -r)
+    elif [ -f /etc/debian_version ]; then
+        OS="debian"
+        OS_VER=`cat /etc/debian_version`
+    elif [ -f /etc/redhat-release ]; then
+        OS=$(awk '{print $1}' /etc/redhat-release | tr '[:upper:]' '[:lower:]')
+        OS_VER=$(awk '{print $3}' /etc/redhat-release)
+    fi
+}

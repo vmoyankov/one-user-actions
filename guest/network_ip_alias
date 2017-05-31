@@ -8,6 +8,8 @@ PREFIX=$3
 LOCK_FILE="/var/run/one-context.lock"
 CONTEXT_FILE="/tmp/context.$$"
 
+. /etc/one-user-action/functions
+
 function get_new_context
 {
     CONTEXT_DEV=`blkid -l -t LABEL="CONTEXT" -o device`
@@ -141,6 +143,40 @@ function del_addr
 
 function add_network_configuration
 {
+    get_distro
+    case $OS in
+        ubuntu | debian)
+            add_network_configuration_deb
+            ;;
+        centos | redhat | fedora)
+            add_network_configuration_rh
+            ;;
+        *)
+            >&2 echo "Unknown distribution $OS $OS_VER"
+            exit 1
+    esac
+}
+
+function del_network_configuration
+{
+    get_distro
+    case $OS in
+        ubuntu | debian)
+            del_network_configuration_deb
+            ;;
+        centos | redhat | fedora)
+            del_network_configuration_rh
+            ;;
+        *)
+            >&2 echo "Unknown distribution $OS $OS_VER"
+            exit 1
+    esac
+}
+
+# Debian based distros
+##########################################
+function add_network_configuration_deb
+{
 
     check_iface_addr
 
@@ -149,9 +185,7 @@ function add_network_configuration
     for f in /etc/network/interfaces.d/$IFACE:*.cfg ; do
         a=${f%.cfg}
         N=${a##*:}
-        echo found $f - $N
     done
-    echo N $N
     N=$(( $N + 1 ))
 
     SUBIF=$IFACE:$N
@@ -170,9 +204,10 @@ iface $SUBIF inet static
     netmask $MASK
 EOF
 
+        ifup $SUBIF
 }
 
-function del_network_configuration
+function del_network_configuration_deb
 {
     check_iface_addr
 
@@ -185,10 +220,57 @@ function del_network_configuration
     done
 }
 
+#
+# RedHat based distros
+##############################################
+
+function add_network_configuration_rh
+{
+
+    check_iface_addr
+
+    # get next available sub-interface number
+    N=0
+    for f in /etc/sysconfig/network-scripts/ifcfg-$IFACE:* ; do
+        N=${f##*:}
+    done
+    N=$(( $N + 1 ))
+
+    SUBIF=$IFACE:$N
+
+    cat <<EOF >/etc/sysconfig/network-scripts/ifcfg-${SUBIF}
+#
+# DO NOT REMOVE OR EDIT THIS FILE
+#
+# This file is created automatically and will be deleted/updated
+# when VM setticg are changed. Do not edit, rename or remove!
+#
+DEVICE=$SUBIF
+BOOTPROTO=static
+ONBOOT=yes
+NM_CONTROLLED=no
+IPADDR=$ADDRESS
+NETMASK=$MASK
+EOF
+
+        ifup $SUBIF
+}
+
+function del_network_configuration_rh
+{
+    check_iface_addr
+
+    # find network intreface with this IP address
+    for f in $(fgrep -l "IPADDR=$ADDRESS" /etc/sysconfig/network-scripts/ifcfg-$IFACE:*) ; do
+        SUBIF=${f##*/ifcfg-}
+        ifdown $SUBIF
+        rm -f $f
+    done
+}
+
 case $COMMAND in
     add)
         add_network_configuration
-        ifup $SUBIF
         ;;
     delete)
         del_network_configuration

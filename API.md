@@ -32,7 +32,7 @@ Input:
 
 Output:
   - boolean: True on success, false on error
-  - string: output of the command if success, ot error message if failed
+  - string: output of the command if success, or error message if failed
   - int: error code or exit status of external command. 0 on success
 
 -----------------------
@@ -41,7 +41,7 @@ one.user_action.reset_password
 Reset root password.
 
   Input:
-    - string: new password in plain text
+    - string: new password base64-encoded
 
 -----------------------
 one.user_action.reset_network_config
@@ -78,7 +78,7 @@ one.user_action.del_ip_alias
 
 Delete existing ip addres from network interface. This method shall be used 
 to delete addresses added by one.user_action.add_ip_alias only. It shall not be
-used to remove primary interface addresses, although it may suceed. The method 
+used to remove primary interface addresses. The method 
 does not check if the address was previously added. It does not release any 
 reservation for the address. Address management shall be done externally.
 Address prefix and interface index shall match the add request.
@@ -105,5 +105,6 @@ one.user_action.exec
 Execute any command on guest OS. Use with care!
 
   Input:
-    - string: command to be executed on the guest OS. stdout is return if exit
-      code is 0, if exit code != 0 stderr is returned
+    - string: base64-encoded command to be executed on the guest OS. 
+      stdout is return if exit code is 0, 
+      if exit code != 0 stderr is returned

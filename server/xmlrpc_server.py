@@ -40,13 +40,13 @@ def clear_firewall(auth, vid):
 def add_ip_alias(auth, vid, if_idx, address):
     user_action.AUTH = auth
     res = user_action.remote_action(vid, 'network_ip_alias',
-                ['add', if_idx, address])
+                ['add', str(if_idx), address])
     return (res[0] == 0, res[2] if res[0] else res[1], res[0])
 
 def del_ip_alias(auth, vid, if_idx, address):
     user_action.AUTH = auth
     res = user_action.remote_action(vid, 'network_ip_alias',
-            ['delete', if_idx, address])
+            ['delete', str(if_idx), address])
     return (res[0] == 0, res[2] if res[0] else res[1], res[0])
 
 def test(auth, vid, msg):
