@@ -31,6 +31,19 @@ cat <<EOF > $OUT_FILE
 
 $LICENSE
 
+######################################################################
+#
+# This installer installs scripts needed by OpenNebula
+# User Action extentions for guest OS.
+# All scripts are installed in /etc/one-user-action.
+#
+# User Action functions require qemu-guest-agent ver >= 2.5 
+# to be installed in guest OS.
+#
+######################################################################
+
+set -e
+
 INSTALL_DIR=/etc/one-user-action
 
 mkdir -p \$INSTALL_DIR
