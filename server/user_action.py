@@ -30,8 +30,7 @@ SSH_USER = 'oneadmin'
 
 server = None
 
-def get_vm_info(id):
-
+def connect_to_server(URI):
     import httplib
 
     class TimeoutTransport(xmlrpclib.Transport):
@@ -42,11 +41,16 @@ def get_vm_info(id):
             h = httplib.HTTPConnection(host, timeout=self.timeout)
             return h
 
+    t = TimeoutTransport()
+    t.set_timeout(2.0)
+    server = xmlrpclib.ServerProxy(URI, transport=t)
+    return server
+
+def get_vm_info(id):
+    global server
 
     if server is None:
-        t = TimeoutTransport()
-        t.set_timeout(2.0)
-        server = xmlrpclib.ServerProxy(URI, transport=t)
+        server = connect_to_server(URI)
 
     ok, res, code = server.one.vmpool.info(
             AUTH,
@@ -82,13 +86,13 @@ def get_vm_context(vm):
     return ctx
 
 def set_vm_context(vm,ctx):
+    global server
+
     vmid = get_vm_id(vm)
     xml = ET.tostring(ctx)
 
     if server is None:
-        t = TimeoutTransport()
-        t.set_timeout(2.0)
-        server = xmlrpclib.ServerProxy(URI, transport=t)
+        server = connect_to_server(URI)
 
     ok, res, code = server.one.vm.updateconf(
             AUTH,
