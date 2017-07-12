@@ -1,0 +1,14 @@
+[Unit]
+Description=OpenNebula addon actions
+After=opennebula.service
+
+[Service]
+Type=simple
+Group=oneadmin
+User=oneadmin
+
+ExecStart=/usr/lib/one/user-action/xmlrpc_server.py
+Restart=always
+
+[Install]
+WantedBy=opennebula.service
