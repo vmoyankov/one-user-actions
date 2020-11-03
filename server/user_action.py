@@ -67,7 +67,7 @@ def get_vm_info(id):
 
 def get_vm_host(vm):
     try:
-        host = vm.find("./HISTORY_RECORDS/HISTORY[ETIME='0']/HOSTNAME").text
+        host = vm.find("./HISTORY_RECORDS/HISTORY/HOSTNAME").text
     except AttributeError:
         return None
     return host
