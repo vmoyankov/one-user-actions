@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 ######################################################################
@@ -20,9 +20,9 @@
 
 import os
 import sys
-from SimpleXMLRPCServer import SimpleXMLRPCServer
-from SimpleXMLRPCServer import SimpleXMLRPCRequestHandler
-from SocketServer import ForkingMixIn
+from xmlrpc.server import SimpleXMLRPCServer
+from xmlrpc.server import SimpleXMLRPCRequestHandler
+from socketserver import ForkingMixIn
 
 
 import user_action
@@ -87,6 +87,6 @@ server.register_function(u_exec, 'one.user_action.execute')
 if '-d' in sys.argv:
     pid = os.fork()
     if pid:
-        print "server running in background. pid: %d" % pid
+        print("server running in background. pid: %d" % pid)
         sys.exit(0)
 server.serve_forever()

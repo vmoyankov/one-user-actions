@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 ######################################################################
@@ -19,9 +19,11 @@
 
 import sys
 import xml.etree.cElementTree as ET
-import xmlrpclib
 import subprocess
 import os
+
+from xmlrpc.client import ServerProxy
+from xmlrpc.client import Transport
 
 ACTION_DIR = '/var/tmp/one/user_action'
 URI = 'http://localhost:2633/RPC2'
@@ -31,19 +33,19 @@ SSH_USER = 'oneadmin'
 server = None
 
 def connect_to_server(URI):
-    import httplib
+    import http.client
 
-    class TimeoutTransport(xmlrpclib.Transport):
+    class TimeoutTransport(Transport):
         timeout = 10.0
         def set_timeout(self, timeout):
             self.timeout = timeout
         def make_connection(self, host):
-            h = httplib.HTTPConnection(host, timeout=self.timeout)
+            h = http.client.HTTPConnection(host, timeout=self.timeout)
             return h
 
     t = TimeoutTransport()
     t.set_timeout(2.0)
-    server = xmlrpclib.ServerProxy(URI, transport=t)
+    server = ServerProxy(URI, transport=t)
     return server
 
 def get_vm_info(id):
@@ -132,11 +134,11 @@ def remote_action(vid, action, params):
 def main():
     if len(sys.argv) > 2:
         res = remote_action(int(sys.argv[1]), sys.argv[2], sys.argv[3:])
-        print res[1],
-        print >>sys.stderr, res[2],
+        print(res[1], end="")
+        print(res[2], end="", file=sys.stderr)
         sys.exit(res[0])
     else:
-        print "Usage %s <VM_ID> <action> [args ...]" % sys.argv[0]
+        print("Usage %s <VM_ID> <action> [args ...]" % sys.argv[0])
         sys.exit(os.EX_USAGE)
 
 

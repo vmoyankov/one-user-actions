@@ -1,13 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import sys
-import xmlrpclib
+from xmlrpc.client import ServerProxy
 
 URL = 'http://localhost:2634/RPC2'
 AUTH = 'XXXX:XXXX'
 
-server = xmlrpclib.ServerProxy(URL)
+server = ServerProxy(URL)
 res = server.one.user_action.test(AUTH, int(sys.argv[1]), sys.argv[2])
-print res[0], res[2]
-print res[1]
+print(res[0], res[2])
+print(res[1])

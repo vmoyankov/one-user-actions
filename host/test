@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 ######################################################################
@@ -25,18 +25,19 @@ import guest_exec as ge
 GUEST_PATH = '/etc/one-user-action'
 
 def main():
-    print repr(sys.argv)
+    print(repr(sys.argv))
     if len(sys.argv) > 2:
         out = ge.guest_exec(sys.argv[1],
                 'sh',
                 ['-c', "echo -n 'Hostname:'; hostname; echo -n 'PWD: '; pwd; "
 			"id; echo 'Environment:'; set; echo 'User string:[%s]'" 
 				% sys.argv[2]], wait=True)
-        print out[1],
-        print >> sys.stderr, out[2],
+        print(out[1], end="")
+        print(sys.stderr, out[2], end="", file=sys.stderr)
         sys.exit(out[0])
     else:
-        print "Usage %s <domain> <test string>" % sys.argv[0]
+        print("Usage %s <domain> <test string>" % sys.argv[0],
+                file=sys.stderr)
 
 if __name__ == '__main__':
     main()
