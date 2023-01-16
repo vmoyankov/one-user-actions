@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 ######################################################################
@@ -22,6 +22,7 @@ import sys
 import json
 import subprocess
 import time
+import base64
 
 def get_output(domain, pid, timeout=5):
     ga_cmd = {
@@ -70,8 +71,8 @@ def guest_exec(domain, cmd, argv, wait=True):
             return (127, '', 'Timeout executing guest agent command')
         r = res['return']
         exitcode = r.get('exitcode')
-        out = r.get('out-data','').decode('base64')
-        err = r.get('err-data','').decode('base64')
+        out = base64.b64decode(r.get('out-data', b''))
+        err = base64.b64decode(r.get('err-data', b''))
         return (exitcode, out, err)
     return (0, '', '')
 
@@ -79,11 +80,12 @@ def main():
     import os
     if len(sys.argv) > 2:
         out = guest_exec(sys.argv[1], sys.argv[2], sys.argv[3:], wait=True)
-        print out[1],
-        print >> sys.stderr, out[2],
+        sys.stdout.write(out[1])
+        sys.stderr.write(out[2])
         sys.exit(out[0])
     else:
-        print >>sys.stderr, "Usage %s <domain> <cmd> [<args>, ...]" % sys.argv[0]
+        print("Usage %s <domain> <cmd> [<args>, ...]" % sys.argv[0],
+                file=sys.stderr)
         sys.exit(os.EX_USAGE)
 
 if __name__ == '__main__':
