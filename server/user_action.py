@@ -134,8 +134,8 @@ def remote_action(vid, action, params):
 def main():
     if len(sys.argv) > 2:
         res = remote_action(int(sys.argv[1]), sys.argv[2], sys.argv[3:])
-        sys.stdout.write(res[1])
-        sys.stderr.write(res[2])
+        sys.stdout.buffer.write(res[1])
+        sys.stderr.buffer.write(res[2])
         sys.exit(res[0])
     else:
         print("Usage %s <VM_ID> <action> [args ...]" % sys.argv[0])

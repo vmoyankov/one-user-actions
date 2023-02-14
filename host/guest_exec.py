@@ -80,8 +80,8 @@ def main():
     import os
     if len(sys.argv) > 2:
         out = guest_exec(sys.argv[1], sys.argv[2], sys.argv[3:], wait=True)
-        sys.stdout.write(out[1])
-        sys.stderr.write(out[2])
+        sys.stdout.buffer.write(out[1])
+        sys.stderr.buffer.write(out[2])
         sys.exit(out[0])
     else:
         print("Usage %s <domain> <cmd> [<args>, ...]" % sys.argv[0],
