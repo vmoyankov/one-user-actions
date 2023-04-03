@@ -20,13 +20,16 @@
 
 import sys
 import shlex
+import base64
+
 
 import guest_exec as ge
 
 def main():
     import os
     if len(sys.argv) == 3:
-        cmd = shlex.split(sys.argv[2].decode('base64'))
+        cmd_str = base64.b64decode(sys.argv[2]).decode('utf-8')
+        cmd = shlex.split(cmd_str)
         out = ge.guest_exec(sys.argv[1], cmd[0], cmd[1:], wait=True)
         sys.stdout.buffer.write(out[1])
         sys.stderr.buffer.write(out[2])

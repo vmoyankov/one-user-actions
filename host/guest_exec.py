@@ -60,7 +60,7 @@ def guest_exec(domain, cmd, argv, wait=True):
                     'qemu-agent-command', domain, json.dumps(ga_cmd)]
                 )
     except subprocess.CalledProcessError as e:
-        return(e.returncode, e.output, '')
+        return(e.returncode, e.output, b'')
     res = json.loads(result_str)
     pid = res['return']['pid']
 
@@ -74,7 +74,7 @@ def guest_exec(domain, cmd, argv, wait=True):
         out = base64.b64decode(r.get('out-data', b''))
         err = base64.b64decode(r.get('err-data', b''))
         return (exitcode, out, err)
-    return (0, '', '')
+    return (0, b'', b'')
 
 def main():
     import os
